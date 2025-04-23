@@ -13,6 +13,30 @@ To better understand the timeline and flow of this pipeline, you can explore the
 
 ---
 
+## Example Usage:
+
+1) **Login Page**
+![CI/CD Timeline](./assets/login.png)
+
+2) **Dashboard Page**
+![CI/CD Timeline](./assets/dashboard.png)
+
+3) **Live Host Discovery Page**
+![CI/CD Timeline](./assets/live_hosts.png)
+
+4) **DNS Records Page**
+![CI/CD Timeline](./assets/dns_info.png)
+
+5) **Subdomain Takeover Checking Page**
+![CI/CD Timeline](./assets/subzy.png)
+
+6) **Waybackurls Records**
+![CI/CD Timeline](./assets/waybacksurl.png)
+
+7) **Tech Stack**
+![CI/CD Timeline](./assets/whatweb.png)
+
+
 ## 🚀 Features
 
 - Subdomain enumeration via `subfinder` and `assetfinder`
