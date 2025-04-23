@@ -8,6 +8,8 @@ This project delivers a fully automated **Recon-as-Code** workflow for passive r
 
 To better understand the timeline and flow of this pipeline, you can explore the full visual representation below:
 
+![done](https://onurcangnc.github.io/web_app_recon_ci-cd/)
+
 👉 **[📌 View the CI/CD Passive Recon Mindmap (Markmap)](./markmap.html)**  
 ![CI/CD Timeline](./assets/flow.png)
 
