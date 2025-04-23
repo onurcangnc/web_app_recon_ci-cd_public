@@ -14,6 +14,20 @@ Since I wanted to run Kali distro tools for each step, I do not lose entire outp
 ![CI/CD Timeline](./assets/workflow.png)
 
 
+General Overview of Workflow
+
+![CI/CD Timeline](./assets/workflow2.png)
+
+
+You can also see what steps achivied by Docker Kali Container
+
+![CI/CD Timeline](./assets/workflow4.png)
+
+
+Proof Of Concept on Flask Web Application
+
+
+
 To better understand the timeline and flow of this pipeline, you can explore the full visual representation below:
 
 [🔗 View Live Recon Dashboard](https://onurcangnc.github.io/web_app_recon_ci-cd/)
