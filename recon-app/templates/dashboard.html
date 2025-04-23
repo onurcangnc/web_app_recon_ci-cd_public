@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Recon Dashboard</title>
+
+  <!-- Fonts and Styles -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Roboto+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}" />
+</head>
+
+<body>
+  
+  <!-- Loader Overlay -->
+  <div id="overlay-loader" class="loader-overlay" style="display: none;">
+    <div class="loader"></div>
+  </div>
+
+  <!-- Matrix Background -->
+  <canvas id="matrix-bg"></canvas>
+
+  <!-- Header -->
+  <header class="app-header">
+    <div class="header-inner">
+      <div class="header-left">
+        <a href="https://bilishim.com"><img src="https://bilishim.com/images/logo.png" class="logo-img" alt="Logo" /></a>
+        <span class="logo-text">Web Application Reconnaissance Portal</span>
+      </div>
+
+      <nav class="nav-links">
+        <a href="/live_2xx_3xx_hosts">🌐 Subdomains</a>
+        <a href="/dns_info">📡 DNS</a>
+        <a href="/subzy">🧠 Takeovers</a>
+        <a href="/waybackurls">📜 Wayback</a>
+        <a href="/whatweb">🔍 Tech Stack</a>
+      </nav>
+
+      <div class="header-right">
+        <button class="btn btn-logout">Logout</button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Content -->
+  <main class="main-content container dashboard-page-main">
+    <section>
+      <div class="panel dashboard-content-box">
+        <img src="https://bilishim.com/images/logo.png" alt="Logo" class="logo-img" style="margin-bottom: 1rem;"/>
+        <h2>👋 Welcome to the Dashboard</h2>
+        <p>Select a report from the navigation bar above to view the details from the latest scan.</p>
+        <p><em>Recon data is served from: <strong>Docker</strong></em></p>
+      </div>
+    </section>
+  </main>
+
+  <!-- Scripts -->
+  <script src="{{ url_for('static', filename='auth_flask.js') }}"></script>
+
+  <script>
+    // Ensure logout is registered after DOM is ready
+    document.addEventListener("DOMContentLoaded", () => {
+      const logoutBtn = document.querySelector('.btn-logout');
+      if (logoutBtn) {
+        logoutBtn.addEventListener('click', window.logout);
+      }
+    });
+  </script>
+</body>
+</html>

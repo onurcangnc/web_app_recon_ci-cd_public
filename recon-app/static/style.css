@@ -1,0 +1,393 @@
+/* ========== RESET ========== */
+*,
+*::before,
+*::after {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+:root {
+  --bg-dark: #0a0a0f;
+  --bg-panel: #1a1c24;
+  --text-primary: #f4f4f5;
+  --text-secondary: #9ca3af;
+  --accent: #10b981;
+  --accent-dark: #047857;
+  --danger: #ef4444;
+  --font-main: 'Inter', sans-serif;
+  --font-mono: 'Roboto Mono', monospace;
+}
+
+body {
+  font-family: var(--font-main);
+  background-color: var(--bg-dark);
+  color: var(--text-primary);
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* ========== BACKGROUND MATRIX ========== */
+#matrix-bg {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: -1;
+  opacity: 0.1;
+}
+
+/* ========== HEADER ========== */
+.app-header {
+  background-color: rgba(10, 10, 15, 0.95);
+  border-bottom: 1px solid #2e3748;
+  padding: 1rem 2rem;
+  position: fixed;
+  top: 0;
+  width: 100%;
+  z-index: 10;
+}
+
+.header-inner {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  gap: 1.5rem;
+}
+
+.header-left {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.logo-img {
+  height: 36px;
+  width: 36px;
+  border-radius: 50%;
+}
+
+.logo-text {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  white-space: nowrap;
+}
+
+.nav-links {
+  display: flex;
+  justify-content: center;
+  gap: 2rem;
+}
+
+.nav-links a {
+  text-decoration: none;
+  color: #9ca3af;
+  font-weight: 500;
+  white-space: nowrap;
+  transition: color 0.2s ease;
+}
+
+.nav-links a:hover {
+  color: #10b981;
+}
+
+.header-right .btn-logout {
+  padding: 0.4rem 0.8rem;
+  background-color: transparent;
+  border: 1px solid #4b5563;
+  color: #d1d5db;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  transition: background-color 0.2s ease;
+}
+
+.header-right .btn-logout:hover {
+  background-color: #374151;
+}
+
+/* ========== MAIN AREA ========== */
+.main-content {
+  margin-top: 100px;
+  padding: 2rem;
+  flex: 1;
+}
+
+.dashboard-content-box {
+  max-width: 700px;
+  margin: 0 auto;
+  padding: 2rem;
+  background-color: var(--bg-panel);
+  border-radius: 10px;
+  border: 1px solid #2c2f3a;
+  text-align: center;
+  box-shadow: 0 0 15px rgba(16, 185, 129, 0.1);
+}
+
+.dashboard-content-box h2 {
+  margin-bottom: 1rem;
+}
+
+.dashboard-content-box p {
+  color: var(--text-secondary);
+  margin-bottom: 0.75rem;
+}
+
+/* ========== LOGIN PAGE ========== */
+.login-wrapper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+  padding: 2rem;
+}
+
+.login-box {
+  background-color: var(--bg-panel);
+  border-radius: 10px;
+  padding: 2rem;
+  max-width: 450px;
+  width: 100%;
+  text-align: center;
+  box-shadow: 0 0 15px rgba(0, 255, 128, 0.1);
+}
+
+.login-box h2 {
+  font-size: 1.4rem;
+  margin-bottom: 1.5rem;
+}
+
+.login-header img {
+  margin-bottom: 1rem;
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.login-header h2 {
+  margin-bottom: 0.5rem;
+  margin-top: 0.5rem;
+  font-size: 1.25rem;
+}
+
+.form-group {
+  margin-bottom: 1rem;
+  text-align: left;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 0.4rem;
+  font-weight: 500;
+}
+
+.form-control {
+  width: 100%;
+  padding: 0.6rem;
+  border: 1px solid #374151;
+  border-radius: 6px;
+  background-color: #1f2937;
+  color: var(--text-primary);
+}
+
+.form-control:focus {
+  border-color: var(--accent);
+  outline: none;
+}
+
+.btn-login-submit {
+  margin-top: 1rem;
+  width: 100%;
+  padding: 0.75rem;
+  background-color: var(--accent);
+  color: var(--bg-dark);
+  border: none;
+  font-weight: bold;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.btn-login-submit:hover {
+  background-color: var(--accent-dark);
+}
+
+.error-message {
+  margin-top: 0.5rem;
+  color: var(--danger);
+  font-size: 0.95rem;
+}
+
+/* ========== 404 PAGE ========== */
+.card {
+  text-align: center;
+  margin: 6rem auto;
+  padding: 2rem;
+  max-width: 500px;
+  background-color: var(--bg-panel);
+  border-radius: 10px;
+  box-shadow: 0 0 15px rgba(255, 0, 0, 0.1);
+}
+
+.card h2 {
+  margin-bottom: 1rem;
+}
+
+.card a.btn {
+  margin-top: 1rem;
+  display: inline-block;
+}
+
+/* ========== MEDIA QUERIES ========== */
+@media (max-width: 768px) {
+  .app-header {
+    flex-direction: column;
+    gap: 1rem;
+    align-items: flex-start;
+  }
+
+  .nav-links,
+  .nav-links-horizontal {
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  .login-box,
+  .dashboard-content-box {
+    padding: 1.5rem;
+  }
+}
+
+/* ========== NAVBAR LINK HOVER EFEKTI ========== */
+.nav-links a {
+  position: relative;
+  transition: color 0.2s ease;
+}
+
+.nav-links a::after {
+  content: "";
+  position: absolute;
+  width: 0%;
+  height: 2px;
+  left: 0;
+  bottom: -4px;
+  background: var(--accent);
+  transition: width 0.3s ease;
+}
+
+.nav-links a:hover::after {
+  width: 100%;
+}
+
+.nav-links a:hover {
+  color: var(--accent);
+}
+
+/* ========== LOGO HOVER EFEKTI ========== */
+.logo-img {
+  transition: transform 0.3s ease;
+}
+
+.logo-img:hover {
+  transform: rotate(10deg) scale(1.05);
+}
+
+/* ========== DASHBOARD PANEL PARILTI VE GLOW ========== */
+.dashboard-content-box {
+  box-shadow: 0 0 20px rgba(16, 185, 129, 0.2), 0 0 40px rgba(16, 185, 129, 0.08);
+  transition: box-shadow 0.3s ease;
+  background: linear-gradient(to right, rgba(16,185,129,0.05), rgba(0,0,0,0.2));
+  border: 1px solid rgba(16, 185, 129, 0.4);
+  backdrop-filter: blur(3px);
+}
+
+.dashboard-content-box:hover {
+  box-shadow: 0 0 30px rgba(16, 185, 129, 0.3), 0 0 60px rgba(16, 185, 129, 0.15);
+}
+
+/* ========== NAVBAR GLASSMORPHIC ARKAPLAN ========== */
+.app-header {
+  background-color: rgba(15, 17, 23, 0.85); /* önceki arkaplan yerine */
+  backdrop-filter: blur(8px);
+}
+
+/* ========== LOGIN KUTUSU HOVER SCALE (3D EFEKT) ========== */
+.login-box {
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.login-box:hover {
+  transform: scale(1.02);
+  box-shadow: 0 0 40px rgba(16, 185, 129, 0.25);
+}
+
+/* ========== FORM INPUT FOCUS GLOW EFEKTI ========== */
+.form-control:focus {
+  border-color: var(--accent);
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.2);
+}
+
+/* ========== NAVBAR AKTIF LINK VURGUSU ========== */
+.nav-links a.active,
+.nav-links a.router-link-active {
+  color: var(--accent);
+  font-weight: 600;
+  border-bottom: 2px solid var(--accent);
+}
+
+/* ========== LOADER (YÜKLENİYOR EFEKTİ) ========== */
+.loader {
+  border: 4px solid #1f2937;
+  border-top: 4px solid var(--accent);
+  border-radius: 50%;
+  width: 32px;
+  height: 32px;
+  animation: spin 1s linear infinite;
+  margin: 2rem auto;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* ========== FULL SCREEN LOADER OVERLAY ========== */
+.loader-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 100vh;
+  width: 100vw;
+  background-color: rgba(0, 0, 0, 0.6);
+  z-index: 9999;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.loader {
+  width: 48px;
+  height: 48px;
+  border: 5px solid #1f2937;
+  border-top: 5px solid var(--accent);
+  border-radius: 50%;
+  animation: spin 0.9s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* Çok uzun satırları kırmak için */
+.wrapped-output {
+  white-space: pre-wrap;
+  word-wrap: break-word;
+  overflow-x: auto;
+  font-family: 'Roboto Mono', monospace;
+  font-size: 0.9rem;
+  line-height: 1.4;
+}

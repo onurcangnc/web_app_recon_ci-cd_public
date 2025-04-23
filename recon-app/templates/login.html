@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Login – Web Application Recon</title>
+
+  <!-- Fonts & Styles -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Roboto+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}" />
+</head>
+<body class="login-page-v2">
+  <div id="overlay-loader" class="loader-overlay" style="display: none;">
+    <div class="loader"></div>
+  </div>
+  <!-- Matrix Effect Background -->
+  <canvas id="matrix-bg"></canvas>
+
+  <div class="login-wrapper">
+    <div class="login-box panel">
+      <div class="login-header">
+        <img src="https://bilishim.com/images/logo.png" alt="Web App Recon Logo" class="logo-img" />
+        <h2>Web Application Reconnaissance Portal</h2>
+      </div>
+
+      <form id="login-form" onsubmit="loginUser(); return false;">
+        <div class="form-group">
+          <label for="email">Email Address</label>
+          <input type="email" id="email" class="form-control" placeholder="you@example.com" required />
+        </div>
+
+        <div class="form-group">
+          <label for="password">Password</label>
+          <input type="password" id="password" class="form-control" placeholder="Enter your password" required />
+        </div>
+
+        <div id="error-message" class="error-message"></div>
+
+        <button type="submit" id="login-button" class="btn btn-login-submit">Login</button>
+      </form>
+
+    </div>
+  </div>
+
+  <script src="{{ url_for('static', filename='auth_flask.js') }}"></script>
+</body>
+</html>

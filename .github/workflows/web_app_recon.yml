@@ -1,0 +1,111 @@
+name: Passive Reconnaissance DevSecOps Pipeline
+
+on:
+  workflow_dispatch:
+    inputs:
+      domain:
+        description: 'Target Domain (e.g. example.com)'
+        required: true
+        default: 'bilishim.com'
+
+env:
+  DOMAIN: ${{ github.event.inputs.domain }}
+  HOST_OUTPUT_DIR: /home/runner/recon-app
+  CONTAINER_OUTPUT_DIR: /output
+
+jobs:
+  build:
+    runs-on: [self-hosted, recon]
+    container:
+      image: ghcr.io/onurcangnc/kali-pentest:latest
+      volumes:
+        - /home/runner/recon-app:/output
+
+    steps:
+      - name: 🧾 Checkout Repository
+        uses: actions/checkout@v4
+        with:
+          path: '.'
+
+      - name: ✅ Print Target Domain
+        shell: bash
+        run: |
+          echo "[+] Recon will run for: $DOMAIN"
+
+      - name: 🔍 Subdomain Discovery | subfinder + assetfinder
+        id: subdomains
+        shell: bash
+        run: |
+          mkdir -p findings
+          subfinder -d "$DOMAIN" -all -silent -o findings/subfinder.txt
+          assetfinder --subs-only "$DOMAIN" > findings/assetfinder.txt
+          cat findings/subfinder.txt findings/assetfinder.txt | sort -u > findings/all_subdomains.txt
+          echo "[+] Total subdomains found: $(wc -l < findings/all_subdomains.txt)"
+
+      - name: 🌐 Live Hosts Probe | httpx
+        if: hashFiles('findings/all_subdomains.txt') != ''
+        shell: bash
+        run: |
+          httpx -l findings/all_subdomains.txt \
+            -ports 80,443,8000,8080,8888 \
+            -threads 100 -timeout 5 -retries 1 \
+            -follow-redirects -silent \
+            -mc 200,201,202,203,204,205,206,207,208,226,300,301,302,303,304,305,306,307,308 \
+            -o findings/live_2xx_3xx_urls.txt
+          cut -d' ' -f1 findings/live_2xx_3xx_urls.txt | sed 's|https\?://||' | sort -u > findings/live_2xx_3xx_hosts.txt
+
+      - name: 📡 DNS Information | dnsx
+        shell: bash
+        run: |
+          dnsx -l findings/all_subdomains.txt -a -cname -txt -mx -resp -silent \
+            | sed 's/\x1B\[[0-9;]*[a-zA-Z]//g' > findings/dns_info.txt
+
+      - name: 🧠 Subdomain Takeover | subzy
+        shell: bash
+        run: |
+          subzy run --targets findings/all_subdomains.txt --concurrency 50 --hide_fails --timeout 10 \
+            | sed 's/\x1B\[[0-9;]*[a-zA-Z]//g' > findings/subzy.txt
+
+      - name: 🔍 Tech Stack Fingerprint | whatweb + wayback
+        shell: bash
+        run: |
+          whatweb -i findings/live_2xx_3xx_urls.txt --no-errors --color=never > findings/whatweb.txt
+
+          echo "[+] Running WaybackURLs..."
+          WAYBACK_TEMP=$(mktemp)
+          echo "$DOMAIN" | waybackurls > "$WAYBACK_TEMP" 2>/dev/null
+          mv "$WAYBACK_TEMP" findings/raw_waybackurls.txt
+
+          echo "[+] Probing WaybackURLs with httpx..."
+          httpx -l findings/raw_waybackurls.txt \
+            -threads 50 -timeout 3 -retries 1 -follow-redirects -silent \
+            -mc 200,201,202,203,204,205,206,207,208,226,300,301,302,303,304,305,306,307,308 \
+            -o findings/waybackurls.txt
+
+          echo "[+] Total live wayback URLs: $(wc -l < findings/waybackurls.txt)"
+
+      - name: 🧪 Show Findings
+        shell: bash
+        run: |
+          if [ -d findings ]; then
+            echo "[*] Contents of findings/:"
+            ls -lh findings
+            echo "[*] First few lines from each file:"
+            head -n 5 findings/*.txt 2>/dev/null || echo "No .txt files found in findings/"
+          else
+            echo "[!] findings/ directory not found!"
+          fi
+
+      - name: 📝 Copy Findings & Generate Report
+        shell: bash
+        run: |
+          mkdir -p "$CONTAINER_OUTPUT_DIR/data"
+          cp findings/*.txt "$CONTAINER_OUTPUT_DIR/data/"
+          echo "[*] Copied files to $CONTAINER_OUTPUT_DIR/data:"
+          ls -lh "$CONTAINER_OUTPUT_DIR/data"
+          python3 generate_report.py
+
+      - name: 🧹 Cleanup Artifacts
+        shell: bash
+        run: |
+          rm -f "$CONTAINER_OUTPUT_DIR/data"/*.txt || echo "[!] No .txt files cleaned."
