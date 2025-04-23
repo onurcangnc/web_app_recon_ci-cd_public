@@ -6,6 +6,14 @@ This project delivers a fully automated **Recon-as-Code** workflow for passive r
 
 ## 🧭 Pipeline Flow
 
+
+### Workflow can be seen below:
+
+Since I wanted to run Kali distro tools for each step, I do not lose entire outputs in every tools.
+
+![CI/CD Timeline](./assets/workflow.png)
+
+
 To better understand the timeline and flow of this pipeline, you can explore the full visual representation below:
 
 [🔗 View Live Recon Dashboard](https://onurcangnc.github.io/web_app_recon_ci-cd/)
