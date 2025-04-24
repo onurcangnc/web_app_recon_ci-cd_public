@@ -16,6 +16,7 @@ SECTION_ORDER = [
     (SUBZY_RESULTS,            "🧪 Subdomain Takeover"),
     (WAYBACK,                  "📜 Wayback URLs"),
     ("whatweb.txt",            "🔍 Tech Stack"),
+    ("waybackurls_filtered.txt", "🕵️ Filtered Sensitive Wayback URLs"),
 ]
 
 HTML_HEADER = textwrap.dedent("""\
@@ -51,6 +52,7 @@ HTML_HEADER = textwrap.dedent("""\
         <a href="/dns_info">📡 DNS</a>
         <a href="/subzy">🧠 Takeovers</a>
         <a href="/waybackurls">📜 Wayback</a>
+        <a href="/waybackurls_filtered">🕵️ Sensitive URLs</a>
         <a href="/whatweb">🔍 Tech Stack</a>
       </nav>
 

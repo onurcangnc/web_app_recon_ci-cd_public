@@ -50,7 +50,7 @@ jobs:
             -ports 80,443,8000,8080,8888 \
             -threads 100 -timeout 5 -retries 1 \
             -follow-redirects -silent \
-            -mc 200,201,202,203,204,205,206,207,208,226,300,301,302,303,304,305,306,307,308 \
+            -mc 200 \
             -o findings/live_2xx_3xx_urls.txt
           cut -d' ' -f1 findings/live_2xx_3xx_urls.txt | sed 's|https\?://||' | sort -u > findings/live_2xx_3xx_hosts.txt
 
@@ -66,23 +66,26 @@ jobs:
           subzy run --targets findings/all_subdomains.txt --concurrency 50 --hide_fails --timeout 10 \
             | sed 's/\x1B\[[0-9;]*[a-zA-Z]//g' > findings/subzy.txt
 
-      - name: 🔍 Tech Stack Fingerprint | whatweb + wayback
+      - name: 🔍 Tech Stack Fingerprint | whatweb + optimized wayback
         shell: bash
         run: |
+          echo "[+] Running WhatWeb on live URLs..."
           whatweb -i findings/live_2xx_3xx_urls.txt --no-errors --color=never > findings/whatweb.txt
+          echo "[+] WhatWeb completed."
 
-          echo "[+] Running WaybackURLs..."
+          echo "[+] Running WaybackURLs for $DOMAIN..."
           WAYBACK_TEMP=$(mktemp)
           echo "$DOMAIN" | waybackurls > "$WAYBACK_TEMP" 2>/dev/null
-          mv "$WAYBACK_TEMP" findings/raw_waybackurls.txt
-
-          echo "[+] Probing WaybackURLs with httpx..."
-          httpx -l findings/raw_waybackurls.txt \
-            -threads 50 -timeout 3 -retries 1 -follow-redirects -silent \
-            -mc 200,201,202,203,204,205,206,207,208,226,300,301,302,303,304,305,306,307,308 \
-            -o findings/waybackurls.txt
-
-          echo "[+] Total live wayback URLs: $(wc -l < findings/waybackurls.txt)"
+          sort -u "$WAYBACK_TEMP" > findings/waybackurls.txt
+          echo "[+] Total Wayback URLs: $(wc -l < findings/waybackurls.txt)"
+      
+      - name: 🕵️ Filter Sensitive Wayback URLs
+        shell: bash
+        run: |
+          echo "[+] Filtering sensitive URLs (endpoints, docs, queries)..."
+          grep -Ei '\.(php|aspx|jsp|html|cgi|pl|py|rb|do|action|json|xml|env|txt|conf|log|ini|cfg|bak|old|zip|rar|tar|gz|doc|docx|xls|xlsx|csv|ppt|pptx|pdf|rtf|md|yml|yaml|css)(\?|$)|\?.*=' \
+            findings/waybackurls.txt > findings/waybackurls_filtered.txt
+          echo "[✅] Filtered sensitive Wayback URLs: $(wc -l < findings/waybackurls_filtered.txt)"
 
       - name: 🧪 Show Findings
         shell: bash
