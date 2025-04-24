@@ -15,51 +15,60 @@ To better understand the timeline and flow of this pipeline, you can explore the
 
 ## Example Usage:
 
-1) **Login Page**
-![CI/CD Timeline](./assets/login.png)
+1) **Login Page**  
+![Login](./assets/login.png)
 
-2) **Dashboard Page**
-![CI/CD Timeline](./assets/dashboard.png)
+2) **Dashboard Page**  
+![Dashboard](./assets/dashboard.png)
 
-3) **Live Host Discovery Page**
-![CI/CD Timeline](./assets/live_hosts.png)
+3) **Live Host Discovery Page**  
+![Live Hosts](./assets/live_hosts.png)
 
-4) **DNS Records Page**
-![CI/CD Timeline](./assets/dns_info.png)
+4) **DNS Records Page**  
+![DNS Records](./assets/dns_info.png)
 
-5) **Subdomain Takeover Checking Page**
-![CI/CD Timeline](./assets/subzy.png)
+5) **Subdomain Takeover Checking Page**  
+![Subzy](./assets/subzy.png)
 
-6) **Waybackurls Records**
-![CI/CD Timeline](./assets/waybacksurl.png)
+6) **Waybackurls Records**  
+![Wayback](./assets/waybacksurl.png)
 
-7) **Tech Stack**
-![CI/CD Timeline](./assets/whatweb.png)
+7) **Tech Stack**  
+![WhatWeb](./assets/whatweb.png)
 
+---
 
 ## 🚀 Features
 
 - Subdomain enumeration via `subfinder` and `assetfinder`
 - Live host probing using `httpx` (filtered 2xx/3xx)
 - Archived URL extraction via `waybackurls`
+- Sensitive endpoint filtering with regex from wayback data
 - Technology stack fingerprinting with `whatweb`
 - DNS record enumeration using `dnsx`
 - Subdomain takeover detection via `subzy`
 - Optional GitHub leak detection using `github-dorks`
-- HTML report generation with pagination and dark-mode support
-- Authenticated Flask dashboard with session validation and logout
-- Matrix-style animated UI with dark theme
+- HTML report generation with:
+  - Pagination (10 lines/page)
+  - Search/filter
+  - Download `.txt` output
+- Secure Flask dashboard:
+  - bcrypt-hashed login
+  - Session timeout after 10 minutes
+  - Session heartbeat every 2 minutes
+- Matrix-style animated UI with dark mode
+- Custom 404 error page with themed fallback
 
 ---
 
 ## 🛠️ Technologies
 
-- Python (Flask) – Web interface and session logic
-- SQLite – Secure user credential storage
-- JavaScript – Pagination, auth, matrix animation
-- Docker – Runtime environment
-- GitHub Actions – CI/CD workflow execution
-- Self-hosted Runner – Volume-mounted deployment
+- **Python (Flask)** – Web interface and session logic
+- **SQLite** – Secure user credential storage
+- **JavaScript** – Pagination, auth, session check, matrix animation
+- **Docker** – Runtime environment
+- **GitHub Actions** – CI/CD workflow execution
+- **Self-hosted Runner** – Volume-mounted deployment
 
 ---
 
@@ -75,12 +84,15 @@ A lightweight, prebuilt Docker image optimized for passive recon and automation.
 
 The pipeline defined in `web_app_recon.yml`:
 
-1. Accepts a domain input (or defaults to `target.com`)
-2. Runs passive recon tools in parallel
-3. Stores output as `.txt` files under `findings/`
-4. Copies findings into `/output/data/`
-5. Runs `generate_report.py` to create `.html` reports from `.txt`
-6. Reports become available to the authenticated Flask frontend
+1. Accepts a domain input (or defaults to `bilishim.com`)
+2. Cleans up previous `.txt` artifacts
+3. Runs passive recon tools in parallel:
+   - `subfinder`, `assetfinder`, `httpx`, `dnsx`, `subzy`, `whatweb`, `waybackurls`
+4. Filters sensitive URLs from wayback results
+5. Stores output as `.txt` files under `findings/`
+6. Copies findings into `/output/data/`
+7. Runs `generate_report.py` to create paginated `.html` reports
+8. Reports become available to the authenticated Flask frontend
 
 ---
 
@@ -88,7 +100,8 @@ The pipeline defined in `web_app_recon.yml`:
 
 - Secure login via Flask using bcrypt-hashed credentials stored in SQLite
 - Sessions expire after 10 minutes of inactivity
-- All pages including `/dashboard` and report routes (`/dns_info.html`, etc.) are protected
+- Session heartbeat checks every 2 minutes to auto-logout inactive users
+- All pages including `/dashboard` and report routes are protected
 
 ---
 
@@ -97,10 +110,11 @@ The pipeline defined in `web_app_recon.yml`:
 - `live_2xx_3xx_hosts.html` – Subdomains with live HTTP(S) services
 - `dns_info.html` – DNS record results
 - `subzy_results.html` – Vulnerable subdomains
-- `waybackurls.html` – Archived endpoints
+- `waybackurls.html` – Archived endpoints with download option
+- `waybackurls_filtered.html` – Sensitive filtered URLs with download option
 - `whatweb.html` – Technology fingerprinting results
 
-All reports are **paginated**, searchable, and styled for readability and dark mode.
+All reports are **paginated**, searchable, and styled for readability and dark mode. `.txt` downloads available where relevant.
 
 ---
 
@@ -111,25 +125,38 @@ This system follows a **DevSecOps-aligned approach** to passive reconnaissance b
 - 🧾 CI/CD-based automation via GitHub Actions
 - 🧪 Recon tools for DNS, Subdomains, Tech Stack, Wayback URLs
 - 📄 Report generation using Python with pagination & filtering
-- 🔐 Session-controlled Flask dashboard
-- 🌌 Fully themed frontend with matrix animation and dark mode
+- 🔐 Session-controlled Flask dashboard with Matrix-themed UI
 
 ---
 
 ## 🧪 Local Setup
 
+```bash
+# 1. Install Flask and dependencies
+pip install flask flask-session bcrypt
+
+# 2. Create user database
+python db.py
+
+# 3. Run the Flask app
+python app.py
+
+# 4. Access dashboard:
+http://localhost:5000
+```
+
+---
+
 ## 🌐 Reverse Proxy with NGINX
 
-To make the Flask-based dashboard securely accessible via a domain (e.g. `https://recon.example.com`), you can configure NGINX as a reverse proxy.
+To make the Flask-based dashboard securely accessible via a domain (e.g. `https://localhost:5000`), you can configure NGINX as a reverse proxy.
 
 This setup allows NGINX to:
 - Serve the Flask app on standard HTTPS port (443)
 - Handle TLS (SSL) termination
 - Forward requests to the Flask app running locally on port `5000`
 
----
-
-### 🔧 Example NGINX Configuration
+###  NGINX Configuration
 
 ```nginx
 server {
@@ -156,20 +183,9 @@ server {
         proxy_set_header   X-Forwarded-Proto $scheme;
     }
 }
+```
 
-
-```bash
-# 1. Install Flask and dependencies
-pip install flask flask-session bcrypt
-
-# 2. Create user database
-python db.py
-
-# 3. Run the Flask app
-python app.py
-
-# 4. Access dashboard:
-# http://localhost:5000
+---
 
 ## 🤝 Contributions
 
