@@ -86,6 +86,15 @@ def api_logout():
     session.clear()
     return jsonify({"status": "success"})
 
+@app.route('/waybackurls.txt')
+@login_required
+def download_wayback():
+    return send_from_directory(REPORT_DATA_DIR, 'waybackurls.txt', as_attachment=True)
+
+@app.route('/waybackurls_filtered.txt')
+@login_required
+def download_filtered_wayback():
+    return send_from_directory(REPORT_DATA_DIR, 'waybackurls_filtered.txt', as_attachment=True)
 
 @app.route('/<path:report_name>')
 @login_required

@@ -117,8 +117,8 @@ def main():
 
         is_wayback = (fname == WAYBACK)
         is_subzy = (fname == SUBZY_RESULTS)
-        lines_per_page = WAYBACK_LINES_PER_PAGE if is_wayback else OTHER_LINES_PER_PAGE
         block_id = f"{section_id}-content"
+        lines_per_page = WAYBACK_LINES_PER_PAGE if is_wayback else OTHER_LINES_PER_PAGE
         script_block = f'<script>document.addEventListener("DOMContentLoaded", () => paginatePreTabs("{block_id}", {lines_per_page}));</script>'
 
         print(f"[*] Processing: {fname} -> {os.path.basename(output_html_path)}")
@@ -127,26 +127,36 @@ def main():
             with open(output_html_path, "w", encoding="utf-8") as outfile:
                 outfile.write(HTML_HEADER.format(title=title))
 
-                outfile.write(f'''
-                <div class="search-container" style="text-align: center; margin: 1rem 0;">
-                  <input type="text" id="searchInput-{block_id}" oninput="filterLines('{block_id}')" placeholder="🔍 Search...">
-                </div>
-                ''')
+                if fname in [WAYBACK, "waybackurls_filtered.txt"]:
+                    # Sadece download butonu
+                    download_button_html = f'''
+                    <div style="text-align: center; margin-top: 2rem;">
+                        <a href="/{fname}" download class="btn btn-download">
+                            📥 Download {title}
+                        </a>
+                    </div>
+                    '''
+                    outfile.write(download_button_html)
+                    script_block = ''  # Sayfa script bloğu gerekmez
+                else:
+                    # Normal içerik + arama kutusu + filtre
+                    outfile.write(f'''
+                    <div class="search-container" style="text-align: center; margin: 1rem 0;">
+                      <input type="text" id="searchInput-{block_id}" oninput="filterLines('{block_id}')" placeholder="🔍 Search...">
+                    </div>
+                    ''')
+                    outfile.write(f'<pre id="{block_id}" class="wrapped-output hidden-block">\n')
 
-                outfile.write(f'<pre id="{block_id}" class="wrapped-output hidden-block">\n')
+                    success = process_and_write_file_content(input_path, outfile, is_subzy)
+                    if not success:
+                        failed_files += 1
 
-                success = process_and_write_file_content(input_path, outfile, is_subzy)
-                if not success:
-                    failed_files += 1
+                    outfile.write('\n</pre>\n')
 
-                outfile.write('\n</pre>\n')
                 outfile.write(HTML_FOOTER.format(script_block=script_block))
 
-            if success:
-                print(f"[+] Generated: {output_html_path}")
-                processed_files += 1
-            else:
-                print(f"[-] Failed to generate: {output_html_path}")
+            print(f"[+] Generated: {output_html_path}")
+            processed_files += 1
 
         except IOError as e:
             print(f"[!] Error writing output file {output_html_path}: {e}", file=sys.stderr)

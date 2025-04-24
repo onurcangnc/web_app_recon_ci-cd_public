@@ -27,6 +27,13 @@ jobs:
         with:
           path: '.'
 
+      - name: 🚿 Pre-Cleanup Old TXT Files (Wayback included)
+        shell: bash
+        run: |
+          echo "[*] Cleaning up old TXT files from previous run..."
+          rm -f "$CONTAINER_OUTPUT_DIR/data"/*.txt || true
+          echo "[*] Old TXT cleanup done."
+
       - name: ✅ Print Target Domain
         shell: bash
         run: |
@@ -83,8 +90,8 @@ jobs:
         shell: bash
         run: |
           echo "[+] Filtering sensitive URLs (endpoints, docs, queries)..."
-          grep -Ei '\.(php|aspx|jsp|html|cgi|pl|py|rb|do|action|json|xml|env|txt|conf|log|ini|cfg|bak|old|zip|rar|tar|gz|doc|docx|xls|xlsx|csv|ppt|pptx|pdf|rtf|md|yml|yaml|css)(\?|$)|\?.*=' \
-            findings/waybackurls.txt > findings/waybackurls_filtered.txt
+          grep -Ei '\.(php|aspx|jsp|html|cgi|pl|py|rb|do|action|json|xml|env|txt|conf|log|ini|cfg|bak|old|zip|rar|tar|gz|doc|docx|xls|xlsx|csv|ppt|pptx|pdf|rtf|md|yml|yaml|css|pdf)(\?|$)|\?.*=' \
+            findings/waybackurls.txt > findings/waybackurls_filtered.txt || true
           echo "[✅] Filtered sensitive Wayback URLs: $(wc -l < findings/waybackurls_filtered.txt)"
 
       - name: 🧪 Show Findings
@@ -111,4 +118,7 @@ jobs:
       - name: 🧹 Cleanup Artifacts
         shell: bash
         run: |
-          rm -f "$CONTAINER_OUTPUT_DIR/data"/*.txt || echo "[!] No .txt files cleaned."
+          echo "[*] Cleaning up TXT artifacts except waybackurls..."
+          find "$CONTAINER_OUTPUT_DIR/data" -type f -name "*.txt" ! -name "waybackurls.txt" ! -name "waybackurls_filtered.txt" -exec rm -f {} +
+          echo "[*] Cleanup complete. Remaining files:"
+          ls -lh "$CONTAINER_OUTPUT_DIR/data"
